@@ -7,8 +7,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- Importing SheetJS for Excel -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.16.8/dist/xlsx.full.min.js" integrity="sha256-Ic7HP804IrYks4vUqX1trFF1Nr33RjONeJESZnYxsOY=" crossorigin="anonymous"></script>
-  
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.16.8/dist/xlsx.full.min.js"
+    integrity="sha256-Ic7HP804IrYks4vUqX1trFF1Nr33RjONeJESZnYxsOY=" crossorigin="anonymous"></script>
+
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
@@ -24,12 +25,39 @@
 <body>
   <div class="container">
     <div class="row">
+      <p class="h3">Excel Converter One Page App</p>
+    </div>
+    <div class="row">
       <div class="col-3">
-        <div id="drop_zone" class="card bg-secondary" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
-          <p>Drag one or more files to this Drop Zone ...</p>
+        <div class="row">
+          <div class="card w-100 m-1">
+            <div class="card-body">
+              <p class="h4">Instructions:</p>
+              <p>1. Format your Excel file with 3 columns and a header row: name, username and code</p>
+              <p>2. Drag your file into the grey box below</p>
+              <p>3. Copy and paste results</p>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div id="drop_zone" class="card bg-secondary d-flex w-100 m-1" ondrop="dropHandler(event);"
+            ondragover="dragOverHandler(event);">
+            <div class="card-body align-items-center d-flex" style="min-height: 150px;">
+              <p class="text-light">Drag your Excel file into this box.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div id="resultcolumn" class="col-9">
+        <div id="resultplaceholder" class="row">
+          <div class="card d-flex w-100 m-1">
+            <div class="card-body align-items-center d-flex" style="min-height: 500px;">
+              <p class="h4 text-center w-100">Your results will display here!</p>
+            </div>
+          </div>
         </div>
       </div>
-
     </div>
   </div>
 </body>
@@ -37,40 +65,38 @@
 
 
 <script>
+  function dropHandler(e) {
+    e.stopPropagation(); e.preventDefault();
+    var files = e.dataTransfer.files, f = files[0];
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var data = new Uint8Array(e.target.result);
+      var workbook = XLSX.read(data, { type: 'array' });
 
-function dropHandler(e) {
-  e.stopPropagation(); e.preventDefault();
-  var files = e.dataTransfer.files, f = files[0];
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var data = new Uint8Array(e.target.result);
-    var workbook = XLSX.read(data, {type: 'array'});
+      var first_sheet_name = workbook.SheetNames[0];
+      var worksheet = workbook.Sheets[first_sheet_name];
+      var json = XLSX.utils.sheet_to_json(worksheet);
 
-    var first_sheet_name = workbook.SheetNames[0];
-    var worksheet = workbook.Sheets[first_sheet_name];
-    var json = XLSX.utils.sheet_to_json(worksheet);
+      $('#resultplaceholder').remove();
 
 
-    for (var key in json){
-      var name = json[key]["Name"];
-      var username = json[key]["Username"];
-      var code = json[key]["Code"];
+      for (var key in json) {
+        var name = json[key]["Name"];
+        var username = json[key]["Username"];
+        var code = json[key]["Code"];
 
-      // Hey Andy,
+        var text = `<p>Hey ${name},</p><p>Thanks for registering!</p><p>Your username is: ${username}<br>Your code is: ${code}</p><p>Your friendly team!</p>`
+        var card = $('<div/>').addClass('row').append($('<div/>').addClass('card w-100 m-1').append($('<div/>').addClass('card-body').html(text)))
 
-      // Thanks for registering!
+        $('#resultcolumn').append(card);
 
-      // Your username is: andystructible
-      // Your code is: cc2f8149-bbbf-4895-a01b-a7b526608d00
-
-      // Your friendly Google team!
-    }
+      }
+    };
+    reader.readAsArrayBuffer(f);
+    console.log('File(s) dropped');
   };
-  reader.readAsArrayBuffer(f);
-  console.log('File(s) dropped');
-};
 
-function dragOverHandler(e) {
-  e.preventDefault();
-};
+  function dragOverHandler(e) {
+    e.preventDefault();
+  };
 </script>
