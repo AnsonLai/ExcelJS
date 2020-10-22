@@ -7,8 +7,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- Importing SheetJS for Excel -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.16.8/dist/xlsx.min.js" integrity="sha256-uiBEH1w1te1xpqhfIfLD9N3Kr6+3nr1XzUa7ybw1s8s=" crossorigin="anonymous"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.16.8/dist/xlsx.full.min.js" integrity="sha256-Ic7HP804IrYks4vUqX1trFF1Nr33RjONeJESZnYxsOY=" crossorigin="anonymous"></script>
+  
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
@@ -22,9 +22,55 @@
 </style>
 
 <body>
+  <div class="container">
+    <div class="row">
+      <div class="col-3">
+        <div id="drop_zone" class="card bg-secondary" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
+          <p>Drag one or more files to this Drop Zone ...</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </body>
 
 
 
 <script>
+
+function dropHandler(e) {
+  e.stopPropagation(); e.preventDefault();
+  var files = e.dataTransfer.files, f = files[0];
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var data = new Uint8Array(e.target.result);
+    var workbook = XLSX.read(data, {type: 'array'});
+
+    var first_sheet_name = workbook.SheetNames[0];
+    var worksheet = workbook.Sheets[first_sheet_name];
+    var json = XLSX.utils.sheet_to_json(worksheet);
+
+
+    for (var key in json){
+      var name = json[key]["Name"];
+      var username = json[key]["Username"];
+      var code = json[key]["Code"];
+
+      // Hey Andy,
+
+      // Thanks for registering!
+
+      // Your username is: andystructible
+      // Your code is: cc2f8149-bbbf-4895-a01b-a7b526608d00
+
+      // Your friendly Google team!
+    }
+  };
+  reader.readAsArrayBuffer(f);
+  console.log('File(s) dropped');
+};
+
+function dragOverHandler(e) {
+  e.preventDefault();
+};
 </script>
