@@ -39,21 +39,15 @@
             </div>
           </div>
         </div>
-        <div class="row">
-          <div id="drop_zone" class="card bg-secondary d-flex w-100 m-1" ondrop="dropHandler(event);"
-            ondragover="dragOverHandler(event);">
-            <div class="card-body align-items-center d-flex" style="min-height: 150px;">
-              <p class="text-light">Drag your Excel file into this box.</p>
-            </div>
-          </div>
-        </div>
+
 
       </div>
       <div id="resultcolumn" class="col-9">
-        <div id="resultplaceholder" class="row">
-          <div class="card d-flex w-100 m-1">
-            <div class="card-body align-items-center d-flex" style="min-height: 500px;">
-              <p class="h4 text-center w-100">Your results will display here!</p>
+        <div class="row">
+          <div id="drop_zone" class="card bg-secondary d-flex w-100 m-1" ondrop="dropHandler(event);"
+            ondragover="dragOverHandler(event);">
+            <div class="card-body align-items-center d-flex" style="min-height: 350px;">
+              <p class="text-light text-center w-100">Drag your Excel file into this box.</p>
             </div>
           </div>
         </div>
@@ -77,7 +71,7 @@
       var worksheet = workbook.Sheets[first_sheet_name];
       var json = XLSX.utils.sheet_to_json(worksheet);
 
-      $('#resultplaceholder').remove();
+      $('#drop_zone').remove();
 
 
       for (var key in json) {
