@@ -28,21 +28,38 @@
       <p class="h3">Excel Converter One Page App</p>
     </div>
     <div class="row">
-      <div class="col-3">
+      <div class="col-4">
         <div class="row">
           <div class="card w-100 m-1">
             <div class="card-body">
               <p class="h4">Instructions:</p>
-              <p>1. Format your Excel file with 3 columns and a header row: name, username and code</p>
-              <p>2. Drag your file into the grey box below</p>
-              <p>3. Copy and paste results</p>
+              <p>1. Your Excel file should include exactly 1 row for headers.</p>
+              <p>2. Customize your desired text below, using the header content as pointers surrounded by double curly braces.  For example, if you have a column with a header "Name", you can enter {{Name}}.</p>
+              <p>2. Drag your file into the grey box below.</p>
+              <p>3. Copy and paste your results.</p>
+            </div>
+          </div>
+          <div class="card w-100 m-1">
+            <div class="card-body">
+              <p class="h4">Your Custom Text:</p>
+              <textarea id="textarea" class="form-control" rows="7">
+Hey {{Name}},
+
+Thanks for registering!
+Your username is: {{Username}}
+Your code is: {{Code}}
+
+Thanks!
+Your friendly team!
+              </textarea>
+              <div id="test-output"></div>
             </div>
           </div>
         </div>
 
 
       </div>
-      <div id="resultcolumn" class="col-9">
+      <div id="resultcolumn" class="col-8">
         <div class="row">
           <div id="drop_zone" class="card bg-secondary d-flex w-100 m-1" ondrop="dropHandler(event);"
             ondragover="dragOverHandler(event);">
@@ -75,12 +92,13 @@
 
 
       for (var key in json) {
-        var name = json[key]["Name"];
-        var username = json[key]["Username"];
-        var code = json[key]["Code"];
+        var text = $('#textarea').val();
 
-        var text = `<p>Hey ${name},</p><p>Thanks for registering!</p><p>Your username is: ${username}<br>Your code is: ${code}</p><p>Your friendly team!</p>`
-        var card = $('<div/>').addClass('row').append($('<div/>').addClass('card w-100 m-1').append($('<div/>').addClass('card-body').html(text)))
+        for (var header in json[key]) {
+          text = text.replace('{{' + header + '}}', json[key][header]);
+        }
+
+        var card = $('<div/>').addClass('row').append($('<div/>').addClass('card w-100 m-1').append($('<div/>').addClass('card-body').html(nl2br(text, true))))
 
         $('#resultcolumn').append(card);
 
@@ -93,4 +111,12 @@
   function dragOverHandler(e) {
     e.preventDefault();
   };
+
+  // Converter from https://stackoverflow.com/questions/28668277/jquery-detect-newline-in-a-string
+  function nl2br(str, is_xhtml) {
+    var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';
+    return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
+  }
+
+
 </script>
